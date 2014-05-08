@@ -14,7 +14,7 @@ public class AudioMonitor implements Runnable{
 	
 	public AudioMonitor(Listener<AudioEvent> alerter) {
 		alert = alerter;
-	}
+	} 
 	
 	@Override
 	/**
