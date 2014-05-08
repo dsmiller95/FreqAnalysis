@@ -6,6 +6,5 @@ package main;
  * @param <E>
  */
 public interface Listener<E> {
-
 	public void Activate(E element);
 }

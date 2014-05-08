@@ -9,14 +9,19 @@ package main;
  */
 public class AudioMonitor implements Runnable{
 	
-	Listener<Boolean> alert;
+	Listener<AudioEvent> alert;
 	Thread running;
 	
-	public AudioMonitor(Listener<Boolean> alerter) {
+	public AudioMonitor(Listener<AudioEvent> alerter) {
 		alert = alerter;
 	}
-
+	
 	@Override
+	/**
+	 * Monitors the audio feed, calling events on alert object
+	 * when necessary. This is the method which will be controlling
+	 * the flow of the program
+	 */
 	public void run() {
 		
 	}
