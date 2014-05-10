@@ -4,6 +4,9 @@ import serial.*;
 
 public class Main {
 	
+	static ArduinoInterface inter;
+	
+	
 	public static class ArduinoListener implements Listener<SerialEvent>{
 		public void Activate(SerialEvent element) {
 			//Activate proper serial events
@@ -11,7 +14,12 @@ public class Main {
 	}
 	
 	public static void main(String[] args){
-		ArduinoInterface m = new ArduinoInterface(new ArduinoListener());
-		m.start();
+		try {
+			inter = new ArduinoInterface(new ArduinoListener());
+			inter.start();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
