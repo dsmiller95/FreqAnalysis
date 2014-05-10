@@ -71,6 +71,7 @@ public class ArduinoInterface implements Runnable{
 	}
 	
 	Thread running;
+	String threadName = "serial";
 	byte[] data = new byte[1];
 	@Override
 	/**
@@ -78,23 +79,26 @@ public class ArduinoInterface implements Runnable{
 	 * from the arduino that a box is in position
 	 */
 	public void run() {
-		try {
-			data = port.readBytes();
-		} catch (SerialPortException e) {}
-		if(data != null){
-			for(int i = 0; i < data.length; i++){
-				main.Main.print("Found data: " + data[i]);
-				if(data[i] == IN_POSITION){
-					main.Main.print("Object in position signal");
-					pluckString();
-					alert.Activate(new SerialEvent(true));
+		while(true){
+			try {
+				data = port.readBytes();
+			} catch (SerialPortException e) {}
+			if(data != null){
+				main.Main.print("Found some data");
+				for(int i = 0; i < data.length; i++){
+					main.Main.print("data: " + data[i]);
+					if(data[i] == IN_POSITION){
+						main.Main.print("Object in position signal");
+						pluckString();
+						alert.Activate(new SerialEvent(true));
+					}
 				}
 			}
 		}
 	}
 	
 	public void start() {
-		running = new Thread(this);
+		running = new Thread(this, threadName);
 		running.start();
 	}
 	
