@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="D:/MyDocs/workspace/FreqAnalysis/libraries/jtransforms-2.4.jar"/>
 	<classpathentry kind="lib" path="C:/Users/dsmiller95/workspace/FreqAnalysis/libraries/jtransforms-2.4.jar"/>
+	<classpathentry kind="lib" path="D:/MyDocs/workspace/FreqAnalysis/libraries/minim.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
