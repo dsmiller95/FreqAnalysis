@@ -2,6 +2,7 @@ package Audio;
 
 import java.io.InputStream;
 
+//import serial.Listener;
 import edu.emory.mathcs.jtransforms.fft.*;
 import ddf.minim.*;
 
@@ -12,13 +13,16 @@ import ddf.minim.*;
  * @author millerds
  * 
  */
-public class AudioMonitor implements Runnable {
-
+public class AudioMonitor {
+	
+	/**
+	 * Empty functioned class to initiate Minim with
+	 * @author millerds
+	 */
 	class MinimInit {
 		public String sketchPath(String f) {
 			return "";
 		}
-
 		public InputStream createInput(String f) {
 			return null;
 		}
@@ -26,7 +30,6 @@ public class AudioMonitor implements Runnable {
 
 	private final int avgSampleSize = 500, bufferWidth = 2000;
 
-	Listener<AudioEvent> alert;
 	Thread running;
 	Minim minim;
 	AudioInput in;
@@ -35,28 +38,11 @@ public class AudioMonitor implements Runnable {
 
 	int bandFound;
 
-	public AudioMonitor(Listener<AudioEvent> alerter) {
-		alert = alerter;
+	public AudioMonitor() {
 		minim = new Minim(new MinimInit());
 		in = minim.getLineIn(Minim.STEREO, bufferWidth);
 	}
-
-	@Override
-	/**
-	 * Monitors the audio feed, calling events on alert object
-	 * when necessary. This is the method which will be controlling
-	 * the flow of the program
-	 */
-	public void run() {
-		
-		
-	}
-
-	public void start() {
-		running = new Thread(this);
-		running.start();
-	}
-
+	
 	/**
 	 * returns the current frequency according to an average measured on the
 	 * audio input. Takes significant amount of time, samples in.left
@@ -70,7 +56,7 @@ public class AudioMonitor implements Runnable {
 
 		return getAvg(avgData);
 	}
-
+	
 	private double makeFouriest(float[] data) {
 		FloatFFT_1D fourier = new FloatFFT_1D(data.length);
 		fourier.realForward(data);
