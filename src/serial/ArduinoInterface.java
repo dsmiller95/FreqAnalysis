@@ -1,7 +1,7 @@
 package serial;
 
 public class ArduinoInterface implements Runnable{
-	
+	//blah
 	//messages to receive
 	private final byte IN_POSITION = 105;
 	//messages to send
