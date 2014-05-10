@@ -1,7 +1,7 @@
 package Audio;
 
 /**
- * Holds all data needed to be passed as an alert to the listener
+ * Holds all data Needed to be passed as an alert to the listener
  * Needed alert cases:
  *  - audio intensity fading
  *  - audio frequency changing sufficiently
