@@ -1,17 +1,23 @@
 package main;
 
+import Audio.*;
 import serial.*;
 
 public class Main {
 	
+	static ArduinoInterface inter;
+	static AudioMonitor audio;
+	
 	public static class ArduinoListener implements Listener<SerialEvent>{
-		public void Activate(SerialEvent element) {
+		public void Activate(SerialEvent e) {
 			//Activate proper serial events
+			
 		}
 	}
 	
 	public static void main(String[] args){
-		ArduinoInterface m = new ArduinoInterface(new ArduinoListener());
-		m.start();
+		inter = new ArduinoInterface(new ArduinoListener());
+		audio = new AudioMonitor();
+		inter.start();
 	}
 }

@@ -46,7 +46,7 @@ public class ArduinoInterface implements Runnable{
 		if(serial.read() == IN_POSITION){
 			//initiate box evaluation
 			pluckString();
-			alert.Activate(new SerialEvent(this, true));
+			alert.Activate(new SerialEvent(true));
 		}
 	}
 	
