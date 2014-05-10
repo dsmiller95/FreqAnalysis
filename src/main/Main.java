@@ -28,10 +28,10 @@ public class Main {
 		try {
 			inter = new ArduinoInterface(new ArduinoListener());
 			inter.start();
+			analizer = new AudioAnalizer();
 		} catch (InstantiationException e) {
 			System.out.println("could not open a serial port, aborting");
 		}
-		analizer = new AudioAnalizer();
 	}
 	
 	/**
@@ -45,7 +45,7 @@ public class Main {
 		double tmp;
 		
 		
-		for(int i = 0; i < samples; i++){
+		for(int i = 0; i < samples || true; i++){
 			if(analizer.getLevel(true) < levelThreshold){
 				inter.pluckString();
 				try{

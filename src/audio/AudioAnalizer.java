@@ -3,7 +3,6 @@ package audio;
 
 import java.io.InputStream;
 
-//import serial.Listener;
 import edu.emory.mathcs.jtransforms.fft.*;
 import ddf.minim.*;
 
@@ -16,18 +15,6 @@ import ddf.minim.*;
  */
 public class AudioAnalizer {
 	
-	/**
-	 * Empty functioned class to initiate Minim with
-	 * @author millerds
-	 */
-	class MinimInit {
-		public String sketchPath(String f) {
-			return "";
-		}
-		public InputStream createInput(String f) {
-			return null;
-		}
-	}
 
 	private final int bufferWidth = 2000;
 

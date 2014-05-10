@@ -83,6 +83,7 @@ public class ArduinoInterface implements Runnable{
 		} catch (SerialPortException e) {}
 		if(data != null){
 			for(int i = 0; i < data.length; i++){
+				main.Main.print("Found data: " + data[i]);
 				if(data[i] == IN_POSITION){
 					main.Main.print("Object in position signal");
 					pluckString();
