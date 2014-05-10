@@ -23,9 +23,9 @@ public class ArduinoInterface implements Runnable{
 		this.alert = alert;
 		
 		String[] portNames = SerialPortList.getPortNames();
-		System.out.println("Found Ports: ");
+		main.Main.print("Found Ports: ");
 		for(int i = 0; i < portNames.length; i++){
-			System.out.println(portNames[i]);
+			main.Main.print(portNames[i]);
 		}
 		
 		if(portNames.length > 0){
@@ -48,6 +48,7 @@ public class ArduinoInterface implements Runnable{
 	 * amplitude
 	 */
 	public void pluckString(){
+		main.Main.print("Plucking String");
 		try {
 			port.writeByte(PLUCK_STRING);
 		} catch (SerialPortException e) {}
@@ -59,6 +60,7 @@ public class ArduinoInterface implements Runnable{
 	 * @param objectFound Whether or not an object was found
 	 */
 	public void continueMoving(boolean objectFound){
+		main.Main.print("Continuing movement, object: " + objectFound);
 		try{
 			if(objectFound){
 				port.writeByte(FIRE_PISTON);
@@ -82,6 +84,7 @@ public class ArduinoInterface implements Runnable{
 		if(data != null){
 			for(int i = 0; i < data.length; i++){
 				if(data[i] == IN_POSITION){
+					main.Main.print("Object in position signal");
 					pluckString();
 					alert.Activate(new SerialEvent(true));
 				}

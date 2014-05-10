@@ -29,12 +29,13 @@ public class AudioAnalizer {
 		}
 	}
 
-	private final int avgSampleSize = 500, bufferWidth = 2000;
+	private final int bufferWidth = 2000;
 
 	Thread running;
 	Minim minim;
 	AudioInput in;
-	double[] avgData = new double[avgSampleSize];
+	double[] avgData;
+	float[] levels;
 	float[] waveForm;
 
 	int bandFound;
@@ -45,15 +46,37 @@ public class AudioAnalizer {
 	}
 	
 	/**
+	 * Returns the level of audio.
+	 * @param whether or not to pull recently collected data for a short average
+	 * @return level of audio
+	 */
+	public double getLevel(boolean useRecentData){
+		if(useRecentData && levels.length > 15){
+			double sum = 0;
+			for(int i = levels.length - 15; i < levels.length; i++){
+				sum += levels[i];
+			}
+			return sum / 15;
+		}
+		return in.left.level();
+	}
+	
+	/**
 	 * returns the current frequency according to an average measured on the
 	 * audio input. Takes significant amount of time, samples in.left
 	 * avgSampleSize times and returns average
+	 * @param avgLength The number of elements to take into account when averaging
 	 */
-	private double getFrequency() {
-		for (int i = 0; i < avgSampleSize; i++) {
+	public double getFrequency(int avgLength) {
+		avgData = new double[avgLength];
+		levels = new float[avgLength];
+		long t = System.currentTimeMillis();
+		for (int i = 0; i < avgLength; i++) {
 			avgData[i] = makeFouriest(in.left.toArray());
+			levels[i] = in.left.level();
 			// delay?
 		}
+		main.Main.print("Time taken: " + Long.toString(System.currentTimeMillis() - t));
 
 		return getAvg(avgData);
 	}
