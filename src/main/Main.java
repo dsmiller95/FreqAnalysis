@@ -10,13 +10,13 @@ public class Main {
 	static ArduinoInterface inter;
 	static AudioAnalizer analizer;
 	
-	static final double levelThreshold = 0.15;
+	static final double levelThreshold = 0.005;
 	
 	/**
 	 * The frequency at which a container with an object will be higher than
 	 * and a container without an object will be lower than
 	 */
-	static final double centerThreshold = 100;
+	static final double centerThreshold = 310;
 	
 	public static class ArduinoListener implements Listener<SerialEvent>{
 		public void Activate(SerialEvent element) {
@@ -39,14 +39,17 @@ public class Main {
 	 * @return true if object found, false otherwise
 	 */
 	public static boolean findObject(){
+		while(true){
 		int avgSize = 100;
-		int samples = 10;
+		int samples = 40;
 		double avg = 0;
 		double tmp;
 		
 		
-		for(int i = 0; i < samples || true; i++){
-			if(analizer.getLevel(true) < levelThreshold){
+		for(int i = 0; i < samples; i++){
+			double level = analizer.getLevel(true);
+			if(level < levelThreshold){
+				print("Plucking string: " + level);
 				inter.pluckString();
 				try{
 					Thread.currentThread().wait(500);
@@ -54,11 +57,12 @@ public class Main {
 			}
 			tmp = analizer.getFrequency(avgSize);
 			avg += tmp;
-			print("Frequency: " + Double.toString(tmp));
+			//print("Frequency: " + Double.toString(analizer.convertBandToFrequency(tmp)));
 		}
 		avg /= samples;
-		
-		return (avg < centerThreshold);
+		print("Avg: " + analizer.convertBandToFrequency(avg) + " Object? " + (avg > analizer.convertFrequencyToBand(centerThreshold)));
+		}
+		//return (avg < centerThreshold);
 	}
 	
 	public static void print(String s){

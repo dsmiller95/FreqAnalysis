@@ -1,7 +1,6 @@
 package audio;
 
 
-import java.io.InputStream;
 
 import edu.emory.mathcs.jtransforms.fft.*;
 import ddf.minim.*;
@@ -17,6 +16,7 @@ public class AudioAnalizer {
 	
 
 	private final int bufferWidth = 2000;
+	private final float conversionIGuess = 3035.518f;
 
 	Thread running;
 	Minim minim;
@@ -30,6 +30,7 @@ public class AudioAnalizer {
 	public AudioAnalizer() {
 		minim = new Minim(new MinimInit());
 		in = minim.getLineIn(Minim.STEREO, bufferWidth);
+		levels = new float[0];
 	}
 	
 	/**
@@ -63,9 +64,17 @@ public class AudioAnalizer {
 			levels[i] = in.left.level();
 			// delay?
 		}
-		main.Main.print("Time taken: " + Long.toString(System.currentTimeMillis() - t));
+		//main.Main.print("Time taken: " + Long.toString(System.currentTimeMillis() - t));
 
 		return getAvg(avgData);
+	}
+	
+	public double convertFrequencyToBand(double freq){
+		return (freq * conversionIGuess / in.sampleRate());
+	}
+	
+	public double convertBandToFrequency(double band){
+		return (band * in.sampleRate() / conversionIGuess);
 	}
 	
 	private double makeFouriest(float[] data) {

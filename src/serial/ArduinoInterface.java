@@ -4,11 +4,11 @@ import jssc.*;
 
 public class ArduinoInterface implements Runnable{
 	//messages to receive
-	private final byte IN_POSITION = 105;
+	private final byte IN_POSITION = 121;
 	//messages to send
-	private final byte PLUCK_STRING = -62, FIRE_PISTON = 21, CONTINUE = 113;
+	private final byte PLUCK_STRING = 62, FIRE_PISTON = 21, CONTINUE = 113, CONFIRM = 43;
 	
-	private final int baudRate = 9600;
+	private final int baudRate = 4800;
 	
 	Listener<SerialEvent> alert;
 	SerialPort port;
@@ -48,10 +48,11 @@ public class ArduinoInterface implements Runnable{
 	 * amplitude
 	 */
 	public void pluckString(){
-		main.Main.print("Plucking String");
 		try {
 			port.writeByte(PLUCK_STRING);
-		} catch (SerialPortException e) {}
+			long t = System.currentTimeMillis();
+			while(t + 100 > System.currentTimeMillis()){}
+		} catch (Exception e) {}
 	}
 	
 	/**
@@ -67,6 +68,16 @@ public class ArduinoInterface implements Runnable{
 			}else{
 				port.writeByte(CONTINUE);
 			}
+		} catch (SerialPortException e) {}
+	}
+	
+	public void confirmMessage(){
+		try {
+			port.writeByte(CONFIRM);
+			port.writeByte(CONFIRM);
+			port.writeByte(CONFIRM);
+			port.writeByte(CONFIRM);
+			main.Main.print("Sent Confirm");
 		} catch (SerialPortException e) {}
 	}
 	
@@ -89,7 +100,9 @@ public class ArduinoInterface implements Runnable{
 					main.Main.print("data: " + data[i]);
 					if(data[i] == IN_POSITION){
 						main.Main.print("Object in position signal");
-						pluckString();
+						confirmMessage();
+						
+						//pluckString();
 						alert.Activate(new SerialEvent(true));
 					}
 				}
