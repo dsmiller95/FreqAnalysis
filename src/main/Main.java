@@ -61,7 +61,7 @@ public class Main {
 			}
 			avg /= samples;
 			print("Avg: " + analizer.convertBandToFrequency(avg) + " Object? " + (avg > analizer.convertFrequencyToBand(centerThreshold)));
-			finalAvg += (avg < centerThreshold) ? 1 : 0;
+			finalAvg += (avg > analizer.convertFrequencyToBand(centerThreshold)) ? 1 : 0;
 		}
 		return ((finalAvg/4.0) > 0.5);
 	}
