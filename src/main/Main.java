@@ -39,30 +39,31 @@ public class Main {
 	 * @return true if object found, false otherwise
 	 */
 	public static boolean findObject(){
-		while(true){
 		int avgSize = 100;
 		int samples = 40;
-		double avg = 0;
+		double avg, finalAvg = 0;
 		double tmp;
 		
-		
-		for(int i = 0; i < samples; i++){
-			double level = analizer.getLevel(true);
-			if(level < levelThreshold){
-				print("Plucking string: " + level);
-				inter.pluckString();
-				try{
-					Thread.currentThread().wait(500);
-				}catch(Exception e){}
+		for(int j = 0; j < 4; j++){
+			avg = 0;
+			for(int i = 0; i < samples; i++){
+				double level = analizer.getLevel(true);
+				if(level < levelThreshold){
+					print("Plucking string: " + level);
+					inter.pluckString();
+					try{
+						Thread.currentThread().wait(500);
+					}catch(Exception e){}
+				}
+				tmp = analizer.getFrequency(avgSize);
+				avg += tmp;
+				//print("Frequency: " + Double.toString(analizer.convertBandToFrequency(tmp)));
 			}
-			tmp = analizer.getFrequency(avgSize);
-			avg += tmp;
-			//print("Frequency: " + Double.toString(analizer.convertBandToFrequency(tmp)));
+			avg /= samples;
+			print("Avg: " + analizer.convertBandToFrequency(avg) + " Object? " + (avg > analizer.convertFrequencyToBand(centerThreshold)));
+			finalAvg += (avg < centerThreshold) ? 1 : 0;
 		}
-		avg /= samples;
-		print("Avg: " + analizer.convertBandToFrequency(avg) + " Object? " + (avg > analizer.convertFrequencyToBand(centerThreshold)));
-		}
-		//return (avg < centerThreshold);
+		return ((finalAvg/4.0) > 0.5);
 	}
 	
 	public static void print(String s){

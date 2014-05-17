@@ -1,18 +1,32 @@
 package serial;
 
+import main.Main;
 import jssc.*;
 
 public class ArduinoInterface implements Runnable{
+	
+	private class MySerialListener implements SerialPortEventListener{
+
+		@Override
+		public void serialEvent(SerialPortEvent e) {
+			if(e.getEventType() == SerialPortEvent.RXCHAR){
+				
+			}
+		}
+	}
+	
+	
 	//messages to receive
 	private final byte IN_POSITION = 121;
 	//messages to send
-	private final byte PLUCK_STRING = 62, FIRE_PISTON = 21, CONTINUE = 113, CONFIRM = 43;
+	private final byte PLUCK_STRING = 62, FIRE_PISTON = 65, CONTINUE = 113, CONFIRM = 43;
 	
 	private final int baudRate = 4800;
 	
 	Listener<SerialEvent> alert;
 	SerialPort port;
 	boolean open = false;
+	
 	
 	/**
 	 * Opens the first available port for serial communications
@@ -51,8 +65,10 @@ public class ArduinoInterface implements Runnable{
 		try {
 			port.writeByte(PLUCK_STRING);
 			long t = System.currentTimeMillis();
-			while(t + 100 > System.currentTimeMillis()){}
-		} catch (Exception e) {}
+			while(t + 110 > System.currentTimeMillis()){}
+		} catch (Exception e) {
+			Main.print("Serial write exception");
+		}
 	}
 	
 	/**
@@ -68,17 +84,18 @@ public class ArduinoInterface implements Runnable{
 			}else{
 				port.writeByte(CONTINUE);
 			}
-		} catch (SerialPortException e) {}
+		} catch (SerialPortException e) {
+			Main.print("Serial write exception");
+		}
 	}
 	
 	public void confirmMessage(){
 		try {
 			port.writeByte(CONFIRM);
-			port.writeByte(CONFIRM);
-			port.writeByte(CONFIRM);
-			port.writeByte(CONFIRM);
 			main.Main.print("Sent Confirm");
-		} catch (SerialPortException e) {}
+		} catch (SerialPortException e) {
+			Main.print("Serial write exception");
+		}
 	}
 	
 	Thread running;
