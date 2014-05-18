@@ -43,17 +43,18 @@ public class Main {
 		int samples = 40;
 		double avg, finalAvg = 0;
 		double tmp;
+		long lastPluck = 0;
 		
 		for(int j = 0; j < 4; j++){
 			avg = 0;
 			for(int i = 0; i < samples; i++){
 				double level = analizer.getLevel(true);
 				if(level < levelThreshold){
-					print("Plucking string: " + level);
-					inter.pluckString();
-					try{
-						Thread.currentThread().wait(500);
-					}catch(Exception e){}
+					if(lastPluck + 100 < System.currentTimeMillis()){
+						print("Plucking string: " + level);
+						inter.pluckString();
+						lastPluck = System.currentTimeMillis();
+					}
 				}
 				tmp = analizer.getFrequency(avgSize);
 				avg += tmp;

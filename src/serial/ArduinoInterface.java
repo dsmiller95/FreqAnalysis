@@ -61,15 +61,11 @@ public class ArduinoInterface implements Runnable{
 	 * Instructs the arduino to pluck the string, to maintain strong enough
 	 * amplitude
 	 */
-	long lastPluck;
 	public void pluckString(){
-		if(lastPluck + 110 < System.currentTimeMillis()){
-			try {
-				port.writeByte(PLUCK_STRING);
-				lastPluck = System.currentTimeMillis();
-			} catch (Exception e) {
-				Main.print("Serial write exception");
-			}
+		try {
+			port.writeByte(PLUCK_STRING);
+		} catch (Exception e) {
+			Main.print("Serial write exception");
 		}
 	}
 	
