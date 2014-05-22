@@ -16,7 +16,7 @@ public class Main {
 	 * The frequency at which a container with an object will be higher than
 	 * and a container without an object will be lower than
 	 */
-	static final double centerThreshold = 310;
+	static final double centerThreshold = 250;
 	
 	public static class ArduinoListener implements Listener<SerialEvent>{
 		public void Activate(SerialEvent element) {
