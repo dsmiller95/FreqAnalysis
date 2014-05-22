@@ -64,6 +64,8 @@ public class ArduinoInterface implements Runnable{
 	public void pluckString(){
 		try {
 			port.writeByte(PLUCK_STRING);
+			long t = System.currentTimeMillis();
+			while(t + 120 > System.currentTimeMillis());
 		} catch (Exception e) {
 			Main.print("Serial write exception");
 		}
@@ -90,7 +92,6 @@ public class ArduinoInterface implements Runnable{
 	public void confirmMessage(){
 		try {
 			port.writeByte(CONFIRM);
-			main.Main.print("Sent Confirm");
 		} catch (SerialPortException e) {
 			Main.print("Serial write exception");
 		}
@@ -110,9 +111,7 @@ public class ArduinoInterface implements Runnable{
 				data = port.readBytes();
 			} catch (SerialPortException e) {}
 			if(data != null){
-				main.Main.print("Found some data");
 				for(int i = 0; i < data.length; i++){
-					main.Main.print("data: " + data[i]);
 					if(data[i] == IN_POSITION){
 						main.Main.print("Object in position signal");
 						confirmMessage();

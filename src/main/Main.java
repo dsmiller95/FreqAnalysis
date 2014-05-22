@@ -16,7 +16,7 @@ public class Main {
 	 * The frequency at which a container with an object will be higher than
 	 * and a container without an object will be lower than
 	 */
-	static final double centerThreshold = 250;
+	static final double centerThreshold = 330;
 	
 	public static class ArduinoListener implements Listener<SerialEvent>{
 		public void Activate(SerialEvent element) {
@@ -45,13 +45,12 @@ public class Main {
 		double tmp;
 		long lastPluck = 0;
 		
-		for(int j = 0; j < 4; j++){
+		for(int j = 0; j < 5; j++){
 			avg = 0;
 			for(int i = 0; i < samples; i++){
 				double level = analizer.getLevel(true);
 				if(level < levelThreshold){
 					if(lastPluck + 100 < System.currentTimeMillis()){
-						print("Plucking string: " + level);
 						inter.pluckString();
 						lastPluck = System.currentTimeMillis();
 					}
@@ -61,10 +60,17 @@ public class Main {
 				//print("Frequency: " + Double.toString(analizer.convertBandToFrequency(tmp)));
 			}
 			avg /= samples;
-			print("Avg: " + analizer.convertBandToFrequency(avg) + " Object? " + (avg > analizer.convertFrequencyToBand(centerThreshold)));
-			finalAvg += (avg > analizer.convertFrequencyToBand(centerThreshold)) ? 1 : 0;
+			avg = analizer.convertBandToFrequency(avg);
+			print("Avg: " + avg + " Object? " + (avg > centerThreshold));
+			if(avg > centerThreshold + 50 || avg < centerThreshold - 50){
+				//throw out the data
+				j--;
+				print("Rejected Data");
+			}else{
+				finalAvg += (avg > centerThreshold) ? 1 : 0;
+			}
 		}
-		return ((finalAvg/4.0) > 0.5);
+		return ((finalAvg/5.0) >= 0.5);
 	}
 	
 	public static void print(String s){
