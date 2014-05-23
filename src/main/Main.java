@@ -23,7 +23,7 @@ public class Main {
 	 * It appears that it vary directly, meaning if sample size is doubled then
 	 * band will double
 	 */
-	static int centerThreshold = 112;
+	static int centerThreshold = 103;
 	
 	public static class ArduinoListener implements Listener<SerialEvent>{
 		public void Activate(SerialEvent element) {
@@ -47,7 +47,7 @@ public class Main {
 	 */
 	public static boolean findObject(){
 		int sampleSize = 50;
-		int samples = 10;
+		int samples = 5;
 		double avg, finalAvg = 0;
 		int[] tmp;
 		long lastPluck = 0;
@@ -66,36 +66,17 @@ public class Main {
 			tmp = analizer.getSamples(sampleSize);
 			common = getMostCommon(tmp);
 			print("Most common: " + common + " : " + getAvg(tmp));
-			System.arraycopy(tmp, 0, allData, i * sampleSize, sampleSize);
+			if(common + 25 < centerThreshold || common - 25 > centerThreshold){
+				//throw out the data
+				i--;
+				print("Bad data: " + common);
+			}else{
+				System.arraycopy(tmp, 0, allData, i * sampleSize, sampleSize);
+			}
 		}
 		common = getMostCommon(allData);
 		print("Final Most Common: " + common + " : " + getAvg(allData));
 		return (common > centerThreshold);
-		
-		/*
-		avg = 0;
-		for(int i = 0; i < samples; i++){
-			double level = analizer.getLevel(true);
-			if(level < levelThreshold){
-				if(lastPluck + 500 < System.currentTimeMillis()){
-					inter.pluckString();
-					lastPluck = System.currentTimeMillis();
-				}
-			}
-			tmp = analizer.getFrequency(avgSize);
-			avg += tmp;
-			//print("Frequency: " + Double.toString(analizer.convertBandToFrequency(tmp)));
-		}
-		avg /= samples;
-		avg = analizer.convertBandToFrequency(avg);
-		print("Avg: " + avg + " Object? " + (avg > centerThreshold));
-		if(avg > centerThreshold + 50 || avg < centerThreshold - 50){
-			//throw out the data
-			j--;
-			print("Rejected Data");
-		}else{
-			finalAvg += (avg > centerThreshold) ? 1 : 0;
-		}*/
 	}
 	
 	public static void print(String s){
@@ -104,22 +85,21 @@ public class Main {
 	}
 	
 	private static int getMostCommon(int[] evaluation){
-		ArrayList<Integer> bukkits = new ArrayList<Integer>();
 		//map acts as a frequency map
-		int[] map = new int[500];//much bigger than needed; fuck it
+		int[] map = new int[2000];//much bigger than needed; fuck it
 		
 		for(int i : evaluation){
-			map[i/2]++;
+			map[i]++;
 		}
 		
-		int maxVal = map[0], maxIndex = 0;
-		for(int i = 1; i < map.length; i++){
-			if(map[i] > maxVal){
-				maxVal = map[i];
-				maxIndex = i;
+		int maxVal = map[0] + map[1], maxIndex = (map[0] > map[1]) ? map[0] : map[1];
+		for(int i = 1; i < map.length - 1; i++){
+			if(map[i] + map[i + 1]> maxVal){
+				maxVal = map[i] + map[i + 1];
+				maxIndex = (map[i] > map[i + 1]) ? map[i] : map[i + 1];
 			}
 		}
-		return maxIndex*2;
+		return maxIndex;
 	}
 	
 	private static double getAvg(int[] dat) {
