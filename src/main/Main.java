@@ -92,11 +92,11 @@ public class Main {
 			map[i]++;
 		}
 		
-		int maxVal = map[0] + map[1], maxIndex = (map[0] > map[1]) ? map[0] : map[1];
+		int maxVal = map[0] + map[1], maxIndex = (map[0] > map[1]) ? 0 : 1;
 		for(int i = 1; i < map.length - 1; i++){
 			if(map[i] + map[i + 1]> maxVal){
 				maxVal = map[i] + map[i + 1];
-				maxIndex = (map[i] > map[i + 1]) ? map[i] : map[i + 1];
+				maxIndex = (map[i] > map[i + 1]) ? i : (i + 1);
 			}
 		}
 		return maxIndex;
