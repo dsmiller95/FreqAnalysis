@@ -21,7 +21,7 @@ public class AudioAnalizer {
 	Thread running;
 	Minim minim;
 	AudioInput in;
-	double[] avgData;
+	int[] avgData;
 	float[] levels;
 	float[] waveForm;
 
@@ -55,11 +55,11 @@ public class AudioAnalizer {
 	 * avgSampleSize times and returns average
 	 * @param avgLength The number of elements to take into account when averaging
 	 */
-	public double getFrequency(int avgLength) {
-		avgData = new double[avgLength];
-		levels = new float[avgLength];
+	public int[] getSamples(int len) {
+		avgData = new int[len];
+		levels = new float[len];
 		long t = System.currentTimeMillis();
-		for (int i = 0; i < avgLength; i++) {
+		for (int i = 0; i < len; i++) {
 			avgData[i] = makeFouriest(in.left.toArray());
 			levels[i] = in.left.level();
 			while(t + 50 > System.currentTimeMillis());
@@ -67,7 +67,7 @@ public class AudioAnalizer {
 		}
 		//main.Main.print("Time taken: " + Long.toString(System.currentTimeMillis() - t));
 
-		return getAvg(avgData);
+		return avgData;
 	}
 	
 	public double convertFrequencyToBand(double freq){
@@ -78,7 +78,7 @@ public class AudioAnalizer {
 		return (band * in.sampleRate() / conversionIGuess);
 	}
 	
-	private double makeFouriest(float[] data) {
+	private int makeFouriest(float[] data) {
 		FloatFFT_1D fourier = new FloatFFT_1D(data.length);
 		fourier.realForward(data);
 		for (int i = 0; i < data.length; i++)
