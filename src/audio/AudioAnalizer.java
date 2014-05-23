@@ -15,7 +15,7 @@ import ddf.minim.*;
 public class AudioAnalizer {
 	
 
-	private final int bufferWidth = 2000;
+	private final int bufferWidth = 1500;
 	private final float conversionIGuess = 3035.518f;
 
 	Thread running;
@@ -62,7 +62,8 @@ public class AudioAnalizer {
 		for (int i = 0; i < avgLength; i++) {
 			avgData[i] = makeFouriest(in.left.toArray());
 			levels[i] = in.left.level();
-			// delay?
+			while(t + 50 > System.currentTimeMillis());
+			t = System.currentTimeMillis();
 		}
 		//main.Main.print("Time taken: " + Long.toString(System.currentTimeMillis() - t));
 

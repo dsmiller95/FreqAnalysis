@@ -65,7 +65,7 @@ public class ArduinoInterface implements Runnable{
 		try {
 			port.writeByte(PLUCK_STRING);
 			long t = System.currentTimeMillis();
-			while(t + 120 > System.currentTimeMillis());
+			while(t + 140 > System.currentTimeMillis());
 		} catch (Exception e) {
 			Main.print("Serial write exception");
 		}

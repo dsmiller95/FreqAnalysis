@@ -10,13 +10,13 @@ public class Main {
 	static ArduinoInterface inter;
 	static AudioAnalizer analizer;
 	
-	static final double levelThreshold = 0.005;
+	static final double levelThreshold = 0.003;
 	
 	/**
 	 * The frequency at which a container with an object will be higher than
 	 * and a container without an object will be lower than
 	 */
-	static final double centerThreshold = 330;
+	static final double centerThreshold = 365;
 	
 	public static class ArduinoListener implements Listener<SerialEvent>{
 		public void Activate(SerialEvent element) {
@@ -39,7 +39,7 @@ public class Main {
 	 * @return true if object found, false otherwise
 	 */
 	public static boolean findObject(){
-		int avgSize = 100;
+		int avgSize = 10;
 		int samples = 40;
 		double avg, finalAvg = 0;
 		double tmp;
@@ -50,7 +50,7 @@ public class Main {
 			for(int i = 0; i < samples; i++){
 				double level = analizer.getLevel(true);
 				if(level < levelThreshold){
-					if(lastPluck + 100 < System.currentTimeMillis()){
+					if(lastPluck + 500 < System.currentTimeMillis()){
 						inter.pluckString();
 						lastPluck = System.currentTimeMillis();
 					}
