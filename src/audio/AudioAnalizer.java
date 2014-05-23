@@ -15,8 +15,8 @@ import ddf.minim.*;
 public class AudioAnalizer {
 	
 
-	private final int bufferWidth = 1500;
-	private final float conversionIGuess = 3035.518f;
+	private final int bufferWidth = 10000;
+	//private final float conversionIGuess = 3035.518f;
 
 	Thread running;
 	Minim minim;
@@ -62,7 +62,7 @@ public class AudioAnalizer {
 		for (int i = 0; i < len; i++) {
 			avgData[i] = makeFouriest(in.left.toArray());
 			levels[i] = in.left.level();
-			while(t + 50 > System.currentTimeMillis());
+			while(t + 10 > System.currentTimeMillis());
 			t = System.currentTimeMillis();
 		}
 		//main.Main.print("Time taken: " + Long.toString(System.currentTimeMillis() - t));
@@ -70,13 +70,13 @@ public class AudioAnalizer {
 		return avgData;
 	}
 	
-	public double convertFrequencyToBand(double freq){
+	/*public double convertFrequencyToBand(double freq){
 		return (freq * conversionIGuess / in.sampleRate());
 	}
 	
 	public double convertBandToFrequency(double band){
 		return (band * in.sampleRate() / conversionIGuess);
-	}
+	}*/
 	
 	private int makeFouriest(float[] data) {
 		FloatFFT_1D fourier = new FloatFFT_1D(data.length);
@@ -94,11 +94,4 @@ public class AudioAnalizer {
 		return maxIndex;
 	}
 
-	private double getAvg(double[] dat) {
-		double sum = 0;
-		for (int i = 0; i < dat.length; i++) {
-			sum += dat[i];
-		}
-		return sum / dat.length;
-	}
 }

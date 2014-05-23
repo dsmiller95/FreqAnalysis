@@ -16,10 +16,14 @@ public class Main {
 	static final double levelThreshold = 0.003;
 	
 	/**
-	 * The frequency at which a container with an object will be higher than
+	 * The band at which a container with an object will be higher than
 	 * and a container without an object will be lower than
+	 * 
+	 * This number WILL CHANGE if the sample size of the Audio analyzer changes
+	 * It appears that it vary directly, meaning if sample size is doubled then
+	 * band will double
 	 */
-	static double centerThreshold = 365;
+	static int centerThreshold = 112;
 	
 	public static class ArduinoListener implements Listener<SerialEvent>{
 		public void Activate(SerialEvent element) {
@@ -32,7 +36,6 @@ public class Main {
 			inter = new ArduinoInterface(new ArduinoListener());
 			inter.start();
 			analizer = new AudioAnalizer();
-			centerThreshold = analizer.convertFrequencyToBand(365);
 		} catch (InstantiationException e) {
 			System.out.println("could not open a serial port, aborting");
 		}
@@ -43,8 +46,8 @@ public class Main {
 	 * @return true if object found, false otherwise
 	 */
 	public static boolean findObject(){
-		int sampleSize = 100;
-		int samples = 40;
+		int sampleSize = 50;
+		int samples = 10;
 		double avg, finalAvg = 0;
 		int[] tmp;
 		long lastPluck = 0;
@@ -62,11 +65,11 @@ public class Main {
 			}
 			tmp = analizer.getSamples(sampleSize);
 			common = getMostCommon(tmp);
-			print("Most common: " + analizer.convertBandToFrequency(common));
+			print("Most common: " + common + " : " + getAvg(tmp));
 			System.arraycopy(tmp, 0, allData, i * sampleSize, sampleSize);
 		}
 		common = getMostCommon(allData);
-		print("Final Most Common: " + analizer.convertBandToFrequency(common));
+		print("Final Most Common: " + common + " : " + getAvg(allData));
 		return (common > centerThreshold);
 		
 		/*
@@ -101,28 +104,29 @@ public class Main {
 	}
 	
 	private static int getMostCommon(int[] evaluation){
-		ArrayList<Integer> data = new ArrayList<Integer>();
+		ArrayList<Integer> bukkits = new ArrayList<Integer>();
+		//map acts as a frequency map
+		int[] map = new int[500];//much bigger than needed; fuck it
+		
 		for(int i : evaluation){
-			data.add(i);
+			map[i/2]++;
 		}
-		Collections.sort(data);
 		
-		int current = -1, len = 0;
-		int maxLen = 0, maxVal = 0;
-		
-		for(Integer i : data){
-			if(i + 1 >= current && i - 1 <= current){//small tolerance
-				len++;
-			}else{
-				if(len > maxLen){
-					maxLen = len;
-					maxVal = current;
-				}
-				current = i;
-				len = 1;
+		int maxVal = map[0], maxIndex = 0;
+		for(int i = 1; i < map.length; i++){
+			if(map[i] > maxVal){
+				maxVal = map[i];
+				maxIndex = i;
 			}
 		}
-		
-		return maxVal;
+		return maxIndex*2;
+	}
+	
+	private static double getAvg(int[] dat) {
+		double sum = 0;
+		for (int i = 0; i < dat.length; i++) {
+			sum += dat[i];
+		}
+		return sum / dat.length;
 	}
 }
