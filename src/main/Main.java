@@ -10,7 +10,7 @@ public class Main {
 	
 	
 	static ArduinoInterface inter;
-	static AudioAnalizer analizer;
+	static AudioAnalizer analizer; 
 	
 	static final double levelThreshold = 0.003;
 	
