@@ -1,5 +1,7 @@
 package main;
 
+import java.util.Scanner;
+
 import serial.*;
 import audio.*;
 
@@ -30,9 +32,10 @@ public class Main {
 	
 	public static void main(String[] args){
 		try {
-			inter = new ArduinoInterface(new ArduinoListener());
-			inter.start();
 			analizer = new AudioAnalizer();
+			inter = new ArduinoInterface(new ArduinoListener());
+			centerThreshold = findThreshold();
+			inter.start();
 		} catch (InstantiationException e) {
 			System.out.println("could not open a serial port, aborting");
 		}
@@ -75,6 +78,89 @@ public class Main {
 		common = getMostCommon(allData, copyIndex - sampleSize);
 		print("Final Most Common: " + common + " : " + getAvg(allData));
 		return (common > centerThreshold);
+	}
+	
+	private static int findThreshold(){
+		int sampleSize = 50;
+		int samples = 5;
+		int[] tmp = new int[sampleSize];
+		long lastPluck = 0;
+		int copyIndex = 0;
+		
+		int[] allData = new int[sampleSize * samples];
+		int common;
+
+		Scanner in = new Scanner(System.in);
+		int lower, higher;
+		print("Press enter to confirm lower limit callibration");
+		in.next();
+		//lower limit
+		while(true){
+			copyIndex = 0;
+			sampleSize = 50;
+			allData = new int[sampleSize * samples];
+			for(int i = 0; i < samples; i++){
+				double level = analizer.getLevel(true);
+				if(level < levelThreshold){
+					if(lastPluck + 500 < System.currentTimeMillis()){
+						print("plucking");
+						inter.pluckString();
+						lastPluck = System.currentTimeMillis();
+					}
+				}
+				sampleSize = analizer.getSamples(tmp, centerThreshold, 50, false);
+				common = getMostCommon(tmp, sampleSize);
+				print("Most common: " + common + " : " + getAvg(tmp));
+				System.arraycopy(tmp, 0, allData, copyIndex, sampleSize);
+				copyIndex += sampleSize;
+			}
+			common = getMostCommon(allData, copyIndex - sampleSize);
+			print("Final Most Common: " + common + " : " + getAvg(allData));
+			lower = common;
+			
+			System.out.println("Retry calibration? (y/n)");
+			char res = in.next().toLowerCase().charAt(0);
+			if(res == 'n'){
+				break;
+			}
+		}
+		
+		//higher limit
+		while(true){
+			copyIndex = 0;
+			sampleSize = 50;
+			allData = new int[sampleSize * samples];
+			for(int i = 0; i < samples; i++){
+				double level = analizer.getLevel(true);
+				if(level < levelThreshold){
+					if(lastPluck + 500 < System.currentTimeMillis()){
+						inter.pluckString();
+						lastPluck = System.currentTimeMillis();
+					}
+				}
+				sampleSize = analizer.getSamples(tmp, centerThreshold, 50, false);
+				common = getMostCommon(tmp, sampleSize);
+				print("Most common: " + common + " : " + getAvg(tmp));
+				System.arraycopy(tmp, 0, allData, copyIndex, sampleSize);
+				copyIndex += sampleSize;
+			}
+			common = getMostCommon(allData, copyIndex - sampleSize);
+			print("Final Most Common: " + common + " : " + getAvg(allData));
+			higher = common;
+			
+			System.out.println("Retry calibration? (y/n)");
+			char res = in.next().toLowerCase().charAt(0);
+			if(res == 'n'){
+				break;
+			}
+		}
+		in.close();
+		
+		inter.continueMoving(false);
+		
+		int thres = (lower + higher)/2;
+		print("Threshold: " + thres);
+		return thres;
 	}
 	
 	public static void print(String s){
