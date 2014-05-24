@@ -15,13 +15,13 @@ import ddf.minim.*;
 public class AudioAnalizer {
 	
 
-	private final int bufferWidth = 10000;
+	private final int bufferWidth = 40000;
 	//private final float conversionIGuess = 3035.518f;
 
 	Thread running;
 	Minim minim;
 	AudioInput in;
-	int[] avgData;
+	//int[] avgData;
 	float[] levels;
 	float[] waveForm;
 
@@ -54,25 +54,28 @@ public class AudioAnalizer {
 	 * audio input. Takes significant amount of time, samples in.left
 	 * avgSampleSize times and returns average
 	 * @param avgLength The number of elements to take into account when averaging
+	 * @return the length of the data sample collected. will probably be less than
+	 * 	store.length if first-pass is enabled
 	 */
-	public int[] getSamples(int len, int centerGoal, int tolerance, boolean firstPassFilter) {
-		avgData = new int[len];
-		levels = new float[len];
+	public int getSamples(int[] store, int centerGoal, int tolerance, boolean firstPassFilter) {
+		levels = new float[store.length];
 		long t = System.currentTimeMillis();
 		int dat;
-		for (int i = 0; i < len; i++) {
+		int index = 0;
+		for (int i = 0; i < store.length; i++) {
 			dat = makeFouriest(in.left.toArray());
 			if(firstPassFilter && (dat + tolerance < centerGoal || dat - tolerance > centerGoal)){
-				i--;
+				//i--;
 			}else{
-				avgData[i] = dat;
-				levels[i] = in.left.level();
+				store[index] = dat;
+				levels[index] = in.left.level();
+				index++;
 			}
-			while(t + 10 > System.currentTimeMillis());
+			while(t + 50 > System.currentTimeMillis());
 			t = System.currentTimeMillis();
 		}
 
-		return avgData;
+		return index;
 	}
 	
 	private int makeFouriest(float[] data) {

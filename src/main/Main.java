@@ -1,8 +1,5 @@
 package main;
 
-import java.util.ArrayList;
-import java.util.Collections;
-
 import serial.*;
 import audio.*;
 
@@ -23,7 +20,7 @@ public class Main {
 	 * It appears that it vary directly, meaning if sample size is doubled then
 	 * band will double
 	 */
-	static int centerThreshold = 102;
+	static int centerThreshold = 425;
 	
 	public static class ArduinoListener implements Listener<SerialEvent>{
 		public void Activate(SerialEvent element) {
@@ -48,9 +45,9 @@ public class Main {
 	public static boolean findObject(){
 		int sampleSize = 50;
 		int samples = 5;
-		double avg, finalAvg = 0;
-		int[] tmp;
+		int[] tmp = new int[sampleSize];
 		long lastPluck = 0;
+		int copyIndex = 0;
 		
 		int[] allData = new int[sampleSize * samples];
 		int common;
@@ -63,18 +60,19 @@ public class Main {
 					lastPluck = System.currentTimeMillis();
 				}
 			}
-			tmp = analizer.getSamples(sampleSize, centerThreshold, 25, true);
-			common = getMostCommon(tmp);
+			sampleSize = analizer.getSamples(tmp, centerThreshold, 25, false);
+			common = getMostCommon(tmp, sampleSize);
 			print("Most common: " + common + " : " + getAvg(tmp));
 			if(common + 25 < centerThreshold || common - 25 > centerThreshold){
 				//throw out the data
 				i--;
 				print("Bad data: " + common);
 			}else{
-				System.arraycopy(tmp, 0, allData, i * sampleSize, sampleSize);
+				System.arraycopy(tmp, 0, allData, copyIndex, sampleSize);
+				copyIndex += sampleSize;
 			}
 		}
-		common = getMostCommon(allData);
+		common = getMostCommon(allData, copyIndex - sampleSize);
 		print("Final Most Common: " + common + " : " + getAvg(allData));
 		return (common > centerThreshold);
 	}
@@ -84,12 +82,12 @@ public class Main {
 			System.out.println(s);
 	}
 	
-	private static int getMostCommon(int[] evaluation){
+	private static int getMostCommon(int[] evaluation, int length){
 		//map acts as a frequency map
 		int[] map = new int[2000];//much bigger than needed; fuck it
 		
-		for(int i : evaluation){
-			map[i]++;
+		for(int i = 0; i < length; i++){
+			map[evaluation[i]]++;
 		}
 		
 		int maxVal = map[0] + map[1], maxIndex = (map[0] > map[1]) ? 0 : 1;

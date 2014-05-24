@@ -115,8 +115,10 @@ public class ArduinoInterface implements Runnable{
 					if(data[i] == IN_POSITION){
 						main.Main.print("Object in position signal");
 						confirmMessage();
-						
-						//pluckString();
+
+						pluckString();
+						//wait for buffer to fill
+						for(long t = System.currentTimeMillis(); t + 750 > System.currentTimeMillis(););
 						alert.Activate(new SerialEvent(true));
 					}
 				}
