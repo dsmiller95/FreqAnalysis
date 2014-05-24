@@ -71,7 +71,7 @@ public class AudioAnalizer {
 				levels[index] = in.left.level();
 				index++;
 			}
-			while(t + 50 > System.currentTimeMillis());
+			while(t + 20 > System.currentTimeMillis());
 			t = System.currentTimeMillis();
 		}
 

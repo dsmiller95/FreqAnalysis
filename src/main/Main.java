@@ -20,7 +20,7 @@ public class Main {
 	 * It appears that it vary directly, meaning if sample size is doubled then
 	 * band will double
 	 */
-	static int centerThreshold = 425;
+	static int centerThreshold = 410;
 	
 	public static class ArduinoListener implements Listener<SerialEvent>{
 		public void Activate(SerialEvent element) {
@@ -60,10 +60,10 @@ public class Main {
 					lastPluck = System.currentTimeMillis();
 				}
 			}
-			sampleSize = analizer.getSamples(tmp, centerThreshold, 25, false);
+			sampleSize = analizer.getSamples(tmp, centerThreshold, 50, false);
 			common = getMostCommon(tmp, sampleSize);
 			print("Most common: " + common + " : " + getAvg(tmp));
-			if(common + 25 < centerThreshold || common - 25 > centerThreshold){
+			if(common + 50 < centerThreshold || common - 50 > centerThreshold){
 				//throw out the data
 				i--;
 				print("Bad data: " + common);
@@ -84,7 +84,7 @@ public class Main {
 	
 	private static int getMostCommon(int[] evaluation, int length){
 		//map acts as a frequency map
-		int[] map = new int[2000];//much bigger than needed; fuck it
+		int[] map = new int[10000];//much bigger than needed; fuck it
 		
 		for(int i = 0; i < length; i++){
 			map[evaluation[i]]++;
