@@ -23,7 +23,7 @@ public class Main {
 	 * It appears that it vary directly, meaning if sample size is doubled then
 	 * band will double
 	 */
-	static int centerThreshold = 103;
+	static int centerThreshold = 102;
 	
 	public static class ArduinoListener implements Listener<SerialEvent>{
 		public void Activate(SerialEvent element) {
