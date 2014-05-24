@@ -63,7 +63,7 @@ public class Main {
 					lastPluck = System.currentTimeMillis();
 				}
 			}
-			tmp = analizer.getSamples(sampleSize);
+			tmp = analizer.getSamples(sampleSize, centerThreshold, 25, true);
 			common = getMostCommon(tmp);
 			print("Most common: " + common + " : " + getAvg(tmp));
 			if(common + 25 < centerThreshold || common - 25 > centerThreshold){

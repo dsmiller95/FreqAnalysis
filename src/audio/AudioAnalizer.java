@@ -55,28 +55,25 @@ public class AudioAnalizer {
 	 * avgSampleSize times and returns average
 	 * @param avgLength The number of elements to take into account when averaging
 	 */
-	public int[] getSamples(int len) {
+	public int[] getSamples(int len, int centerGoal, int tolerance, boolean firstPassFilter) {
 		avgData = new int[len];
 		levels = new float[len];
 		long t = System.currentTimeMillis();
+		int dat;
 		for (int i = 0; i < len; i++) {
-			avgData[i] = makeFouriest(in.left.toArray());
-			levels[i] = in.left.level();
+			dat = makeFouriest(in.left.toArray());
+			if(firstPassFilter && (dat + tolerance < centerGoal || dat - tolerance > centerGoal)){
+				i--;
+			}else{
+				avgData[i] = dat;
+				levels[i] = in.left.level();
+			}
 			while(t + 10 > System.currentTimeMillis());
 			t = System.currentTimeMillis();
 		}
-		//main.Main.print("Time taken: " + Long.toString(System.currentTimeMillis() - t));
 
 		return avgData;
 	}
-	
-	/*public double convertFrequencyToBand(double freq){
-		return (freq * conversionIGuess / in.sampleRate());
-	}
-	
-	public double convertBandToFrequency(double band){
-		return (band * in.sampleRate() / conversionIGuess);
-	}*/
 	
 	private int makeFouriest(float[] data) {
 		FloatFFT_1D fourier = new FloatFFT_1D(data.length);
