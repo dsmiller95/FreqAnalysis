@@ -44,7 +44,7 @@ public class MainUI extends JFrame{
 	}
 	
 	private JButton calibrate, test;
-	private Applet visualization;
+	private Visualization visualization;
 	
 	public MainUI() {
 		this.setTitle("Frequency Scale");
@@ -73,8 +73,11 @@ public class MainUI extends JFrame{
 		this.add(visualization);
 		
 		this.pack();
-		this.setSize(1920, 1080);
+		this.setSize(1420, 1080);
 		this.setVisible(true);
 	}
-
+	
+	public Visualization getVisualization(){
+		return visualization;
+	}
 }

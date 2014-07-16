@@ -37,8 +37,8 @@ public class Main {
 			analizer = new AudioAnalizer();
 			if(GUI_DEMO){
 				ui = new MainUI();
+				analizer.setVisualization(ui.getVisualization());
 				inter = new ArduinoStub(new ArduinoListener());
-				
 			}else{
 				inter = new ArduinoComm(new ArduinoListener());
 				centerThreshold = findThreshold();

@@ -2,6 +2,7 @@ package audio;
 
 
 
+import ui.Visualization;
 import edu.emory.mathcs.jtransforms.fft.*;
 import ddf.minim.*;
 
@@ -20,6 +21,7 @@ public class AudioAnalizer {
 
 	Thread running;
 	Minim minim;
+	Visualization vis;
 	AudioInput in;
 	//int[] avgData;
 	float[] levels;
@@ -31,6 +33,10 @@ public class AudioAnalizer {
 		minim = new Minim(new MinimInit());
 		in = minim.getLineIn(Minim.STEREO, bufferWidth);
 		levels = new float[0];
+	}
+	
+	public void setVisualization(Visualization vis){
+		this.vis = vis;
 	}
 	
 	/**
@@ -90,6 +96,12 @@ public class AudioAnalizer {
 				max = data[i];
 				maxIndex = i;
 			}
+		}
+		if(vis != null){
+			vis.drawData(data, data.length);
+			vis.stroke(0, 255, 0);
+			vis.line(maxIndex, 0, maxIndex, vis.height);
+			vis.stroke(0);
 		}
 		return maxIndex;
 	}
