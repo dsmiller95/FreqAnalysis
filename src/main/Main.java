@@ -1,20 +1,48 @@
 package main;
 
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Scanner;
 
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
 import serial.*;
-import ui.MainUI;
+import ui.Visualization;
 import audio.*;
 
-public class Main {
+public class Main extends JFrame{
+	
+	public class ReCalibrate implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			
+		}
+	}
+	
+	public class TestString implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			
+		}
+	}
+	
+	
 	public static final boolean debug = true;
 	public static final boolean GUI_DEMO = true;
 	
 	static ArduinoInterface inter;
 	static AudioAnalizer analizer;
-	static MainUI ui;
 	
 	static final double levelThreshold = 0.003;
+	
+	private JButton calibrate, test;
+	private Visualization visualization;
 	
 	/**
 	 * The band at which a container with an object will be higher than
@@ -36,8 +64,8 @@ public class Main {
 		try {
 			analizer = new AudioAnalizer();
 			if(GUI_DEMO){
-				ui = new MainUI();
-				analizer.setVisualization(ui.getVisualization());
+				Main gui = new Main();
+				analizer.setVisualization(gui.visualization);
 				inter = new ArduinoStub(new ArduinoListener());
 			}else{
 				inter = new ArduinoComm(new ArduinoListener());
@@ -47,6 +75,37 @@ public class Main {
 		} catch (InstantiationException e) {
 			System.out.println("could not open a serial port, aborting");
 		}
+	}
+	
+	public Main() {
+		this.setTitle("Frequency Scale");
+		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		
+		this.setLayout(new FlowLayout());
+		
+		JPanel buttons = new JPanel(new GridLayout(0, 1));
+		
+		calibrate = new JButton("Calibrate");
+		calibrate.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 20));
+		calibrate.addActionListener(new ReCalibrate());
+		buttons.add(calibrate);
+		
+		test = new JButton("Test");
+		test.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 20));
+		test.addActionListener(new TestString());
+		buttons.add(test);
+		
+		visualization = new Visualization();
+		visualization.setPreferredSize(new Dimension(500, 500));
+		visualization.init();
+		
+		
+		this.add(buttons);
+		this.add(visualization);
+		
+		this.pack();
+		this.setSize(1420, 1080);
+		this.setVisible(true);
 	}
 	
 	/**
