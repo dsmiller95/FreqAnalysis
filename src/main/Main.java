@@ -3,14 +3,16 @@ package main;
 import java.util.Scanner;
 
 import serial.*;
+import ui.MainUI;
 import audio.*;
 
 public class Main {
 	public static final boolean debug = true;
-	
+	public static final boolean GUI_DEMO = true;
 	
 	static ArduinoInterface inter;
-	static AudioAnalizer analizer; 
+	static AudioAnalizer analizer;
+	static MainUI ui;
 	
 	static final double levelThreshold = 0.003;
 	
@@ -33,9 +35,13 @@ public class Main {
 	public static void main(String[] args){
 		try {
 			analizer = new AudioAnalizer();
-			inter = new ArduinoInterface(new ArduinoListener());
-			centerThreshold = findThreshold();
-			inter.start();
+			inter = new ArduinoComm(new ArduinoListener());
+			if(GUI_DEMO){
+				ui = new MainUI();
+			}else{
+				centerThreshold = findThreshold();
+				inter.start();
+			}
 		} catch (InstantiationException e) {
 			System.out.println("could not open a serial port, aborting");
 		}
