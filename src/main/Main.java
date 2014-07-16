@@ -80,6 +80,10 @@ public class Main {
 		return (common > centerThreshold);
 	}
 	
+	/**
+	 * Finds the middle band between the two test values, calibrating
+	 * @return Center band
+	 */
 	private static int findThreshold(){
 		int sampleSize = 50;
 		int samples = 5;
