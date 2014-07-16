@@ -18,11 +18,15 @@ public class Visualization extends PApplet{
 	}
 	
 	public void setup(){
-		
+		size(1770, 1030);
+		background(255);
 	}
 	
+	
+	int color = 0;
 	public void draw(){
-		
+		background(color);
+		color = (color + 1) % 255;
 	}
 
 }

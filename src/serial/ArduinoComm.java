@@ -3,7 +3,7 @@ package serial;
 import main.Main;
 import jssc.*;
 
-public class ArduinoComm implements ArduinoInterface{
+public class ArduinoComm implements ArduinoInterface, Runnable{
 	
 	private class MySerialListener implements SerialPortEventListener{
 
@@ -89,7 +89,7 @@ public class ArduinoComm implements ArduinoInterface{
 		}
 	}
 	
-	public void confirmMessage(){
+	private void confirmMessage(){
 		try {
 			port.writeByte(CONFIRM);
 		} catch (SerialPortException e) {
@@ -126,7 +126,7 @@ public class ArduinoComm implements ArduinoInterface{
 		}
 	}
 	
-	public void start() {
+	public void init() {
 		running = new Thread(this, threadName);
 		running.start();
 	}

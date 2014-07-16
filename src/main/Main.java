@@ -35,13 +35,15 @@ public class Main {
 	public static void main(String[] args){
 		try {
 			analizer = new AudioAnalizer();
-			inter = new ArduinoComm(new ArduinoListener());
 			if(GUI_DEMO){
 				ui = new MainUI();
+				inter = new ArduinoStub(new ArduinoListener());
+				
 			}else{
+				inter = new ArduinoComm(new ArduinoListener());
 				centerThreshold = findThreshold();
-				inter.start();
 			}
+			inter.init();
 		} catch (InstantiationException e) {
 			System.out.println("could not open a serial port, aborting");
 		}
