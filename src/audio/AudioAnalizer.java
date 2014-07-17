@@ -16,7 +16,7 @@ import ddf.minim.*;
 public class AudioAnalizer {
 	
 
-	private final int bufferWidth = 40000;
+	private final int bufferWidth = 4000;
 	//private final float conversionIGuess = 3035.518f;
 
 	Thread running;
@@ -86,7 +86,7 @@ public class AudioAnalizer {
 				maxIndex = i;
 			}
 		}
-		if(vis != null) vis.giveFouriest(data);
+		if(vis != null) vis.giveFouriest(data, maxIndex);
 		return maxIndex;
 	}
 
