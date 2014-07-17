@@ -5,6 +5,6 @@ package serial;
  *
  * @param <E>
  */
-public interface Listener<E> {
+public interface Listener<E> extends Runnable{
 	public void Activate(E element);
 }

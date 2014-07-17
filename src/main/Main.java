@@ -61,7 +61,13 @@ public class Main extends JFrame{
 	static int centerThreshold = 410;
 	
 	public static class ArduinoListener implements Listener<SerialEvent>{
+		Thread running;
+		String threadName = "Analizer";
 		public void Activate(SerialEvent element) {
+			new Thread(this, threadName).start();
+		}
+		@Override
+		public void run() {
 			inter.continueMoving(findObject());
 		}
 	}
