@@ -38,7 +38,7 @@ public class Main extends JFrame{
 	}
 	
 	
-	public static final boolean debug = true;
+	public static final boolean debug = false;
 	public static final boolean GUI_DEMO = true;
 	
 	private static ArduinoInterface inter;
@@ -164,6 +164,9 @@ public class Main extends JFrame{
 		}
 		common = getMostCommon(allData, copyIndex - sampleSize);
 		print("Final Most Common: " + common + " : " + getAvg(allData));
+		if(gui != null){
+			JOptionPane.showMessageDialog(gui, "Found band " + common + " to be most common. Object is " + ((common > centerThreshold) ? "Heavier" : "Lighter") + "!");
+		}
 		return (common > centerThreshold);
 	}
 	
@@ -240,7 +243,7 @@ public class Main extends JFrame{
 		variance = (int) (Math.abs(pair[0] - pair[1])/2 * 1.2);
 		
 		if(GUI_DEMO){
-			JOptionPane.showMessageDialog(gui, "Completed Calibration: center at " + centerThreshold + "./n variance of " + variance + ".");
+			JOptionPane.showMessageDialog(gui, "Completed Calibration: center at " + centerThreshold + ".\n variance of " + variance + ".");
 			gui.visualization.giveThreshold(centerThreshold, variance);
 		}else{
 			print("Threshold: " + centerThreshold);

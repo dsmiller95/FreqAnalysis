@@ -27,21 +27,26 @@ public class Visualization extends PApplet {
 	private float[] waveForm = new float[1], fouriest = new float[1];
 	private float tmp;
 	
+	private static final int waveFormOffset = 60, fouriestOffset = 150;
+	
 	public void draw() {
 		tmp = width / (float)audio.AudioAnalizer.BUFFER_WIDTH;
 		fill(255, 255, 255, 50);
 		rect(0, 0, width, height);
-		drawData(waveForm, width);
-		drawData(bukkitize(fouriest, width), width);
+		drawData(waveForm, width, height - waveFormOffset, 100);
+		drawData(bukkitize(fouriest, width), width, height - fouriestOffset, 100);
 		stroke(0, 255, 0);
 		line(common * tmp, 0, common * tmp, height);
 		stroke(0);
 
 		fill(255, 0, 0);
-		rect(0, height - (height * level), width, height);
+		rect(width - 50, height - (height * level), width, height);
 		stroke(255, 0, 0);
+		
 		line(thresh * tmp, 0, thresh * tmp, height);
-		line((thresh - variance) * tmp, height/2, (thresh + variance) * tmp, height/2);
+		line((thresh - variance) * tmp, height - fouriestOffset, (thresh + variance) * tmp, height - fouriestOffset);
+		line((thresh - variance) * tmp, height - fouriestOffset - 20, (thresh - variance) * tmp, height - fouriestOffset + 20);
+		line((thresh + variance) * tmp, height - fouriestOffset - 20, (thresh + variance) * tmp, height - fouriestOffset + 20);
 		stroke(0);
 	}
 
@@ -65,13 +70,13 @@ public class Visualization extends PApplet {
 		common = mostCommon;
 	}
 
-	public void drawData(float[] dat, int len) {
+	public void drawData(float[] dat, int len, int heightOffset, int multiplier) {
 		if(len > dat.length) return;
-		PVector lastPoint = new PVector(0, height / 2);
+		PVector lastPoint = new PVector(0, heightOffset);
 		for (int i = 0; i < len; i++) {
-			line(lastPoint.x, lastPoint.y, i, height / 2 - dat[i] * 100);
+			line(lastPoint.x, lastPoint.y, i, heightOffset - dat[i] * multiplier);
 			// line(i, height/2, i, height/2 - dat[i] * 40);
-			lastPoint.set(i, height / 2 - dat[i] * 100);
+			lastPoint.set(i, heightOffset - dat[i] * multiplier);
 		}
 	}
 	
