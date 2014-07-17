@@ -21,14 +21,18 @@ public class Main extends JFrame{
 	public class ReCalibrate implements ActionListener{
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			
+			findThreshold();
 		}
 	}
 	
 	public class TestString implements ActionListener{
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			
+			if(findObject()){
+				//success case
+			}else{
+				//fail case
+			}
 		}
 	}
 	
@@ -36,10 +40,12 @@ public class Main extends JFrame{
 	public static final boolean debug = true;
 	public static final boolean GUI_DEMO = true;
 	
-	static ArduinoInterface inter;
-	static AudioAnalizer analizer;
+	private static ArduinoInterface inter;
+	private static AudioAnalizer analizer;
+	private static Main gui;
 	
 	static final double levelThreshold = 0.003;
+	static final int sampleSize = 50;
 	
 	private JButton calibrate, test;
 	private Visualization visualization;
@@ -64,8 +70,7 @@ public class Main extends JFrame{
 		try {
 			analizer = new AudioAnalizer();
 			if(GUI_DEMO){
-				Main gui = new Main();
-				analizer.setVisualization(gui.visualization);
+				gui = new Main();
 				inter = new ArduinoStub(new ArduinoListener());
 			}else{
 				inter = new ArduinoComm(new ArduinoListener());
@@ -113,7 +118,6 @@ public class Main extends JFrame{
 	 * @return true if object found, false otherwise
 	 */
 	public static boolean findObject(){
-		int sampleSize = 50;
 		int samples = 5;
 		int[] tmp = new int[sampleSize];
 		long lastPluck = 0;
@@ -124,13 +128,18 @@ public class Main extends JFrame{
 		
 		for(int i = 0; i < samples; i++){
 			double level = analizer.getLevel(true);
+			
+			if(gui != null){
+				gui.visualization.giveThreshold(centerThreshold);
+			}
+			
 			if(level < levelThreshold){
 				if(lastPluck + 500 < System.currentTimeMillis()){
 					inter.pluckString();
 					lastPluck = System.currentTimeMillis();
 				}
 			}
-			sampleSize = analizer.getSamples(tmp, centerThreshold, 50, false);
+			analizer.getSamples(tmp, centerThreshold, 50, gui.visualization);
 			common = getMostCommon(tmp, sampleSize);
 			print("Most common: " + common + " : " + getAvg(tmp));
 			if(common + 50 < centerThreshold || common - 50 > centerThreshold){
@@ -152,7 +161,6 @@ public class Main extends JFrame{
 	 * @return Center band
 	 */
 	private static int findThreshold(){
-		int sampleSize = 50;
 		int samples = 5;
 		int[] tmp = new int[sampleSize];
 		long lastPluck = 0;
@@ -168,7 +176,6 @@ public class Main extends JFrame{
 		//lower limit
 		while(true){
 			copyIndex = 0;
-			sampleSize = 50;
 			allData = new int[sampleSize * samples];
 			for(int i = 0; i < samples; i++){
 				double level = analizer.getLevel(true);
@@ -179,7 +186,7 @@ public class Main extends JFrame{
 						lastPluck = System.currentTimeMillis();
 					}
 				}
-				sampleSize = analizer.getSamples(tmp, centerThreshold, 50, false);
+				analizer.getSamples(tmp, centerThreshold, 50, null);
 				common = getMostCommon(tmp, sampleSize);
 				print("Most common: " + common + " : " + getAvg(tmp));
 				System.arraycopy(tmp, 0, allData, copyIndex, sampleSize);
@@ -199,7 +206,6 @@ public class Main extends JFrame{
 		//higher limit
 		while(true){
 			copyIndex = 0;
-			sampleSize = 50;
 			allData = new int[sampleSize * samples];
 			for(int i = 0; i < samples; i++){
 				double level = analizer.getLevel(true);
@@ -209,7 +215,7 @@ public class Main extends JFrame{
 						lastPluck = System.currentTimeMillis();
 					}
 				}
-				sampleSize = analizer.getSamples(tmp, centerThreshold, 50, false);
+				analizer.getSamples(tmp, centerThreshold, 50, null);
 				common = getMostCommon(tmp, sampleSize);
 				print("Most common: " + common + " : " + getAvg(tmp));
 				System.arraycopy(tmp, 0, allData, copyIndex, sampleSize);

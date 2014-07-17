@@ -21,7 +21,6 @@ public class AudioAnalizer {
 
 	Thread running;
 	Minim minim;
-	Visualization vis;
 	AudioInput in;
 	//int[] avgData;
 	float[] levels;
@@ -33,10 +32,6 @@ public class AudioAnalizer {
 		minim = new Minim(new MinimInit());
 		in = minim.getLineIn(Minim.STEREO, bufferWidth);
 		levels = new float[0];
-	}
-	
-	public void setVisualization(Visualization vis){
-		this.vis = vis;
 	}
 	
 	/**
@@ -59,32 +54,26 @@ public class AudioAnalizer {
 	 * returns the current frequency according to an average measured on the
 	 * audio input. Takes significant amount of time, samples in.left
 	 * avgSampleSize times and returns average
-	 * @param avgLength The number of elements to take into account when averaging
-	 * @return the length of the data sample collected. will probably be less than
-	 * 	store.length if first-pass is enabled
+	 * @param store
+	 * @return the length of the data sample collected.
 	 */
-	public int getSamples(int[] store, int centerGoal, int tolerance, boolean firstPassFilter) {
+	public void getSamples(int[] store, int centerGoal, int tolerance, Visualization vis) {
 		levels = new float[store.length];
 		long t = System.currentTimeMillis();
 		int dat;
-		int index = 0;
 		for (int i = 0; i < store.length; i++) {
-			dat = makeFouriest(in.left.toArray());
-			if(firstPassFilter && (dat + tolerance < centerGoal || dat - tolerance > centerGoal)){
-				//i--;
-			}else{
-				store[index] = dat;
-				levels[index] = in.left.level();
-				index++;
-			}
+			
+			dat = makeFouriest(in.left.toArray(), vis);
+			store[i] = dat;
+			levels[i] = in.left.level();
+			if(vis != null) vis.giveLevel(levels[i]);
 			while(t + 20 > System.currentTimeMillis());
 			t = System.currentTimeMillis();
 		}
-
-		return index;
 	}
 	
-	private int makeFouriest(float[] data) {
+	private int makeFouriest(float[] data, Visualization vis) {
+		if(vis != null) vis.giveWaveForm(data);
 		FloatFFT_1D fourier = new FloatFFT_1D(data.length);
 		fourier.realForward(data);
 		for (int i = 0; i < data.length; i++)
@@ -97,12 +86,7 @@ public class AudioAnalizer {
 				maxIndex = i;
 			}
 		}
-		if(vis != null){
-			vis.drawData(data, data.length);
-			vis.stroke(0, 255, 0);
-			vis.line(maxIndex, 0, maxIndex, vis.height);
-			vis.stroke(0);
-		}
+		if(vis != null) vis.giveFouriest(data);
 		return maxIndex;
 	}
 

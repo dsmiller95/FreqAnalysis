@@ -28,10 +28,15 @@ public class Visualization extends PApplet{
 		color = (color + 1) % 255;
 	}
 	
-	public void giveWaveForm(float[] wave){
+	public void giveLevel(float level){
 		
 	}
-	
+	public void giveThreshold(int thresh){
+		
+	}
+	public void giveWaveForm(float[] form){
+		
+	}
 	public void giveFouriest(float[] fouriest){
 		
 	}
