@@ -57,7 +57,7 @@ public class AudioAnalizer {
 	 * @param store
 	 * @return the length of the data sample collected.
 	 */
-	public void getSamples(int[] store, int centerGoal, int tolerance, Visualization vis) {
+	public void getSamples(int[] store, Visualization vis) {
 		levels = new float[store.length];
 		long t = System.currentTimeMillis();
 		int dat;

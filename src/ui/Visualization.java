@@ -23,23 +23,25 @@ public class Visualization extends PApplet {
 	}
 
 	private float level = 0;
-	private int thresh = 0, common = 0;
+	private int thresh = 0, variance = 0, common = 0;
 	private float[] waveForm = new float[1], fouriest = new float[1];
-	
+	private float tmp;
 	
 	public void draw() {
+		tmp = width / (float)audio.AudioAnalizer.BUFFER_WIDTH;
 		fill(255, 255, 255, 50);
 		rect(0, 0, width, height);
 		drawData(waveForm, width);
 		drawData(bukkitize(fouriest, width), width);
 		stroke(0, 255, 0);
-		line(common * width / audio.AudioAnalizer.BUFFER_WIDTH, 0, common * width / audio.AudioAnalizer.BUFFER_WIDTH, height);
+		line(common * tmp, 0, common * tmp, height);
 		stroke(0);
 
 		fill(255, 0, 0);
 		rect(0, height - (height * level), width, height);
 		stroke(255, 0, 0);
-		line(thresh * width / audio.AudioAnalizer.BUFFER_WIDTH, 0, thresh * width / audio.AudioAnalizer.BUFFER_WIDTH, height);
+		line(thresh * tmp, 0, thresh * tmp, height);
+		line((thresh - variance) * tmp, height/2, (thresh + variance) * tmp, height/2);
 		stroke(0);
 	}
 
@@ -47,8 +49,9 @@ public class Visualization extends PApplet {
 		this.level = level;
 	}
 
-	public void giveThreshold(int thresh) {
+	public void giveThreshold(int thresh, int variance) {
 		this.thresh = thresh;
+		this.variance = variance;
 	}
 
 	public void giveWaveForm(float[] form) {

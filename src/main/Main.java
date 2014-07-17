@@ -59,7 +59,9 @@ public class Main extends JFrame{
 	 * It appears that it vary directly, meaning if sample size is doubled then
 	 * band will double
 	 */
-	static int centerThreshold = 410;
+	static int centerThreshold = 0;
+	static int variance = 0;
+	
 	
 	public static class ArduinoListener implements Listener<SerialEvent>{
 		Thread running;
@@ -81,7 +83,7 @@ public class Main extends JFrame{
 				inter = new ArduinoStub(new ArduinoListener());
 			}else{
 				inter = new ArduinoComm(new ArduinoListener());
-				centerThreshold = findThreshold();
+				findThreshold();
 			}
 			inter.init();
 		} catch (InstantiationException e) {
@@ -137,7 +139,7 @@ public class Main extends JFrame{
 			double level = analizer.getLevel(true);
 			
 			if(gui != null){
-				gui.visualization.giveThreshold(centerThreshold);
+				gui.visualization.giveThreshold(centerThreshold, variance);
 			}
 			
 			if(level < levelThreshold){
@@ -146,10 +148,12 @@ public class Main extends JFrame{
 					lastPluck = System.currentTimeMillis();
 				}
 			}
-			analizer.getSamples(tmp, centerThreshold, 50, gui.visualization);
+			analizer.getSamples(tmp, gui.visualization);
 			common = getMostCommon(tmp, sampleSize);
 			print("Most common: " + common + " : " + getAvg(tmp));
-			if(common + 50 < centerThreshold || common - 50 > centerThreshold){
+			
+			
+			if(common + variance < centerThreshold || common - variance > centerThreshold){
 				//throw out the data
 				i--;
 				print("Bad data: " + common);
@@ -167,7 +171,7 @@ public class Main extends JFrame{
 	 * Finds the middle band between the two test values, calibrating
 	 * @return Center band
 	 */
-	private static int findThreshold(){
+	private static void findThreshold(){
 		int samples = 5;
 		int[] tmp = new int[sampleSize];
 		long lastPluck = 0;
@@ -178,7 +182,7 @@ public class Main extends JFrame{
 		int[] pair = new int[2];
 		
 		if(gui != null){
-			gui.visualization.giveThreshold(0);
+			gui.visualization.giveThreshold(0, 0);
 		}
 
 		Scanner in;
@@ -204,7 +208,7 @@ public class Main extends JFrame{
 							lastPluck = System.currentTimeMillis();
 						}
 					}
-					analizer.getSamples(tmp, centerThreshold, 50, gui.visualization);
+					analizer.getSamples(tmp, gui.visualization);
 					common = getMostCommon(tmp, sampleSize);
 					print("Most common: " + common + " : " + getAvg(tmp));
 					System.arraycopy(tmp, 0, allData, copyIndex, sampleSize);
@@ -217,7 +221,7 @@ public class Main extends JFrame{
 					case JOptionPane.NO_OPTION:
 						break SampleLoop;
 					case JOptionPane.CANCEL_OPTION:
-						return 0;
+						return;
 					}
 				}else{
 					print("Final Most Common: " + common + " : " + getAvg(allData));
@@ -232,17 +236,16 @@ public class Main extends JFrame{
 		}
 		inter.continueMoving(false);
 		
-		int thres = (pair[0] + pair[1])/2;
+		centerThreshold = (pair[0] + pair[1])/2;
+		variance = (int) (Math.abs(pair[0] - pair[1])/2 * 1.2);
 		
 		if(GUI_DEMO){
-			JOptionPane.showMessageDialog(gui, "Completed Calibration: center at " + thres);
-			gui.visualization.giveThreshold(thres);
+			JOptionPane.showMessageDialog(gui, "Completed Calibration: center at " + centerThreshold + "./n variance of " + variance + ".");
+			gui.visualization.giveThreshold(centerThreshold, variance);
 		}else{
-			print("Threshold: " + thres);
+			print("Threshold: " + centerThreshold);
 			in.close();
 		}
-		
-		return thres;
 	}
 	
 	public static void print(String s){
