@@ -10,6 +10,7 @@ import java.util.Scanner;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import serial.*;
@@ -174,75 +175,73 @@ public class Main extends JFrame{
 		
 		int[] allData = new int[sampleSize * samples];
 		int common;
+		int[] pair = new int[2];
+		
+		if(gui != null){
+			gui.visualization.giveThreshold(0);
+		}
 
-		Scanner in = new Scanner(System.in);
-		int lower, higher;
-		print("Press enter to confirm lower limit callibration");
-		in.next();
-		//lower limit
-		while(true){
-			copyIndex = 0;
-			allData = new int[sampleSize * samples];
-			for(int i = 0; i < samples; i++){
-				double level = analizer.getLevel(true);
-				if(level < levelThreshold){
-					if(lastPluck + 500 < System.currentTimeMillis()){
-						print("plucking");
-						inter.pluckString();
-						lastPluck = System.currentTimeMillis();
+		Scanner in;
+		if(!GUI_DEMO) in = new Scanner(System.in);
+		for(int cnt = 0; cnt < 2; cnt++){
+			if(GUI_DEMO){
+				JOptionPane.showMessageDialog(gui, "Place " + ((cnt == 0) ? "first" : "second") + " object on rig, and click OK");
+			}else{
+				print("Press enter to confirm limit callibration");
+				in.next();
+			}
+			
+			SampleLoop:
+			while(true){
+				copyIndex = 0;
+				allData = new int[sampleSize * samples];
+				for(int i = 0; i < samples; i++){
+					double level = analizer.getLevel(true);
+					if(level < levelThreshold){
+						if(lastPluck + 500 < System.currentTimeMillis()){
+							print("plucking");
+							inter.pluckString();
+							lastPluck = System.currentTimeMillis();
+						}
+					}
+					analizer.getSamples(tmp, centerThreshold, 50, gui.visualization);
+					common = getMostCommon(tmp, sampleSize);
+					print("Most common: " + common + " : " + getAvg(tmp));
+					System.arraycopy(tmp, 0, allData, copyIndex, sampleSize);
+					copyIndex += sampleSize;
+				}
+				common = getMostCommon(allData, copyIndex - sampleSize);
+				pair[cnt] = common;
+				if(GUI_DEMO){
+					switch(JOptionPane.showConfirmDialog(gui, "Calibrated to band " + common + ". Retry calibration?")){
+					case JOptionPane.NO_OPTION:
+						break SampleLoop;
+					case JOptionPane.CANCEL_OPTION:
+						return 0;
+					}
+				}else{
+					print("Final Most Common: " + common + " : " + getAvg(allData));
+					
+					System.out.println("Retry calibration? (y/n)");
+					char res = in.next().toLowerCase().charAt(0);
+					if(res == 'n'){
+						break;
 					}
 				}
-				analizer.getSamples(tmp, centerThreshold, 50, null);
-				common = getMostCommon(tmp, sampleSize);
-				print("Most common: " + common + " : " + getAvg(tmp));
-				System.arraycopy(tmp, 0, allData, copyIndex, sampleSize);
-				copyIndex += sampleSize;
-			}
-			common = getMostCommon(allData, copyIndex - sampleSize);
-			print("Final Most Common: " + common + " : " + getAvg(allData));
-			lower = common;
-			
-			System.out.println("Retry calibration? (y/n)");
-			char res = in.next().toLowerCase().charAt(0);
-			if(res == 'n'){
-				break;
 			}
 		}
-		
-		//higher limit
-		while(true){
-			copyIndex = 0;
-			allData = new int[sampleSize * samples];
-			for(int i = 0; i < samples; i++){
-				double level = analizer.getLevel(true);
-				if(level < levelThreshold){
-					if(lastPluck + 500 < System.currentTimeMillis()){
-						inter.pluckString();
-						lastPluck = System.currentTimeMillis();
-					}
-				}
-				analizer.getSamples(tmp, centerThreshold, 50, null);
-				common = getMostCommon(tmp, sampleSize);
-				print("Most common: " + common + " : " + getAvg(tmp));
-				System.arraycopy(tmp, 0, allData, copyIndex, sampleSize);
-				copyIndex += sampleSize;
-			}
-			common = getMostCommon(allData, copyIndex - sampleSize);
-			print("Final Most Common: " + common + " : " + getAvg(allData));
-			higher = common;
-			
-			System.out.println("Retry calibration? (y/n)");
-			char res = in.next().toLowerCase().charAt(0);
-			if(res == 'n'){
-				break;
-			}
-		}
-		in.close();
-		
 		inter.continueMoving(false);
 		
-		int thres = (lower + higher)/2;
-		print("Threshold: " + thres);
+		int thres = (pair[0] + pair[1])/2;
+		
+		if(GUI_DEMO){
+			JOptionPane.showMessageDialog(gui, "Completed Calibration: center at " + thres);
+			gui.visualization.giveThreshold(thres);
+		}else{
+			print("Threshold: " + thres);
+			in.close();
+		}
+		
 		return thres;
 	}
 	

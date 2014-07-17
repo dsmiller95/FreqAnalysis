@@ -16,7 +16,7 @@ import ddf.minim.*;
 public class AudioAnalizer {
 	
 
-	private final int bufferWidth = 4000;
+	public static final int BUFFER_WIDTH = 4000;
 	//private final float conversionIGuess = 3035.518f;
 
 	Thread running;
@@ -30,7 +30,7 @@ public class AudioAnalizer {
 
 	public AudioAnalizer() {
 		minim = new Minim(new MinimInit());
-		in = minim.getLineIn(Minim.STEREO, bufferWidth);
+		in = minim.getLineIn(Minim.STEREO, BUFFER_WIDTH);
 		levels = new float[0];
 	}
 	

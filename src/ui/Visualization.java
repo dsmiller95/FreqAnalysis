@@ -33,13 +33,13 @@ public class Visualization extends PApplet {
 		drawData(waveForm, width);
 		drawData(bukkitize(fouriest, width), width);
 		stroke(0, 255, 0);
-		line(common * width / fouriest.length, 0, common * width / fouriest.length, height);
+		line(common * width / audio.AudioAnalizer.BUFFER_WIDTH, 0, common * width / audio.AudioAnalizer.BUFFER_WIDTH, height);
 		stroke(0);
 
 		fill(255, 0, 0);
 		rect(0, height - (height * level), width, height);
 		stroke(255, 0, 0);
-		line(thresh * width / fouriest.length, 0, thresh * width / fouriest.length, height);
+		line(thresh * width / audio.AudioAnalizer.BUFFER_WIDTH, 0, thresh * width / audio.AudioAnalizer.BUFFER_WIDTH, height);
 		stroke(0);
 	}
 
