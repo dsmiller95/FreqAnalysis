@@ -7,6 +7,5 @@
 	<classpathentry kind="lib" path="D:/MyDocs/workspace/FreqAnalysis/libraries/jssc-2.8.0.jar"/>
 	<classpathentry kind="lib" path="D:/MyDocs/workspace/FreqAnalysis/libraries/jsminim.jar"/>
 	<classpathentry kind="lib" path="libraries/core.jar"/>
-	<classpathentry kind="lib" path="libraries/miglayout-4.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

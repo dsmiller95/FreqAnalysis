@@ -29,11 +29,7 @@ public class Main extends JFrame{
 	public class TestString implements ActionListener{
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			if(findObject()){
-				//success case
-			}else{
-				//fail case
-			}
+			inter.continueMoving(findObject());
 		}
 	}
 	
@@ -76,19 +72,19 @@ public class Main extends JFrame{
 	}
 	
 	public static void main(String[] args){
-		try {
-			analizer = new AudioAnalizer();
-			if(GUI_DEMO){
-				gui = new Main();
-				inter = new ArduinoStub(new ArduinoListener());
-			}else{
-				inter = new ArduinoComm(new ArduinoListener());
-				findThreshold();
-			}
-			inter.init();
-		} catch (InstantiationException e) {
-			System.out.println("could not open a serial port, aborting");
+		try{
+			inter = new ArduinoComm(new ArduinoListener());
+		}catch (InstantiationException e) {
+			System.out.println("Could not open a serial port, initiating stub.");
+			inter = new ArduinoStub(new ArduinoListener());
 		}
+		analizer = new AudioAnalizer();
+		if(GUI_DEMO){
+			gui = new Main();
+		}else{
+			findThreshold();
+		}
+		inter.init();
 	}
 	
 	public Main() {
@@ -123,7 +119,7 @@ public class Main extends JFrame{
 	}
 	
 	/**
-	 * Uses audio analysis to detect an object in the aperature
+	 * Uses audio analysis to detect an object in the aperture
 	 * @return true if object found, false otherwise
 	 */
 	public static boolean findObject(){
